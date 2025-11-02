@@ -45,7 +45,7 @@ namespace auto mkt {
         u8 *imageOffset: u24;
         type::Hex<u8> type;
         type::Hex<u8> type2 = type & 0xE0 [[export]];
-        str compType = getCompType(type) [[export]];
+        str compType = mkt::getCompType(type) [[export]];
         u8 width;
         u8 height;
         s16 xOffset;
@@ -74,8 +74,8 @@ namespace auto mkt {
         PaletteList palette_section @ palettesOffset + $;
 
         u32 unknown1; // 0x4
-        if (unknown1 != 4) {
-            u32 xyz[65535*10]; // force an error
+        if (unknown1 != 4 && unknown1 != 0) {
+            //u32 xyz[65535*10]; // force an error
         }
         u32 unknown2; // 0x2
         u32 endOfImageHeaders;
@@ -83,11 +83,19 @@ namespace auto mkt {
         u32 nHeaders = endOfImageHeaders / 12 [[export]];
         u32 floorHeight = palettesOffset / 0x3c0 [[export]];
         u32 floor1Pos = palettesOffset + palette_section.byteLength + 8 [[export]];
+        try {
         ImageHeader imageHeaders[nHeaders];
+        } catch {
 
+        }
+
+        try {
         u32 floorOneLen @ floor1Pos;
         u32 floorOneData[floorOneLen / 4] @ addressof(floorOneLen) + 4;
         Palette floorOnePalette @ addressof(floorOneData) + sizeof(floorOneData) + 4;
+        } catch {
+
+        }
 
     };
 
