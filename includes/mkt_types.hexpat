@@ -125,4 +125,18 @@ namespace auto mkt {
         
     };
 
+
+
+    struct MktPcCharacterFile {
+        u32 offset_to_palette_section;
+        u32 offset_to_tables_section;
+
+        ImageHeader imageHeaders[while($ < offset_to_tables_section)];
+
+        u16 tables[while($ < (imageHeaders[0].imageOffset + 4))] @ offset_to_tables_section + 4;
+
+        PaletteList palette_section @ offset_to_palette_section + 4;
+    };
+
+
 }
