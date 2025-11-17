@@ -33,7 +33,8 @@ namespace auto Img {
         s16 otherPalettes;
 
         try {
-            u8 data[((xSize + 3) & ~0x3) * ySize] @ imageDataOffset;
+            u32 dataSize = ((xSize + 3) & ~0x3) * ySize [[export]];
+            u8 data[dataSize] @ imageDataOffset;
         }
     };
 
@@ -51,7 +52,7 @@ namespace auto Img {
             u16 b = 8 * ((d >> 0) & 0x1f);
             sectionData[i] = (a << 24) | (r << 0) | (g << 8) | (b << 16);
         }
-        sectionData[0] = sectionData[0] & ~0xFF; // zero alpha for index 0
+        sectionData[0] = sectionData[0] & ~0xFF000000; // zero alpha for index 0
         return palSection;
     };
 
@@ -70,10 +71,10 @@ namespace auto Img {
         try {
             u16 data[numberOfColors] @ offset;
         }
-        //try {
+        try {
             auto rgba32Section = Img::paletteToRgba32(name, data, numberOfColors) [[export]];
             u32 rgba32[numberOfColors] @ 0x0 in rgba32Section [[export]];
-        //}
+        }
     };
 
     
@@ -117,7 +118,7 @@ namespace auto Img {
 
         u32 palette[numberOfColors] @  0x0 in paletteSection [[export]];
     }
-    [[hex::visualize("bitmap", data, width, height, palette)]]
+    [[sealed, hex::visualize("bitmap", data, width, height, palette)]]
     ;
 
     struct HeadersSection<auto imageCount, auto paletteCount, auto sequenceCount, auto scriptCount> {
