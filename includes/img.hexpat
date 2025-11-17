@@ -1,5 +1,6 @@
 import std.core;
 import std.mem;
+import std.io;
 
 namespace auto Img {
 
@@ -14,6 +15,10 @@ namespace auto Img {
         u16 format;
         u8 bufferScripts[4];
         u16 _padding[3];
+    };
+
+    fn imgHeaderFormatRead(ref auto imgHeader) {
+        return std::format("{} {}x{} pal:{}", imgHeader.name, imgHeader.xSize, imgHeader.ySize, imgHeader.palette-3);
     };
 
     struct ImgHeader {
@@ -36,7 +41,7 @@ namespace auto Img {
             u32 dataSize = ((xSize + 3) & ~0x3) * ySize [[export]];
             u8 data[dataSize] @ imageDataOffset;
         }
-    };
+    } [[format_read("Img::imgHeaderFormatRead")]];
 
     fn paletteToRgba32(auto name, ref auto inData, u32 len) {
         std::mem::Section palSection = std::mem::create_section(name);
