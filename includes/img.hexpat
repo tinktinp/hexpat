@@ -111,9 +111,11 @@ namespace auto Img {
         u32 width = (parent.imgHeaders[i].xSize + 3) & ~0x3;
         u32 height = parent.imgHeaders[i].ySize;
         u8 data[width * height] @ addressof(parent.imgHeaders[i].data);
-        auto paletteSection = parent.paletteHeaders[parent.imgHeaders[i].palette - 3].rgba32Section;
+        u32 paletteIndex = parent.imgHeaders[i].palette - 3;
+        auto paletteSection = parent.paletteHeaders[paletteIndex].rgba32Section;
+        u32 numberOfColors = parent.paletteHeaders[paletteIndex].numberOfColors;
 
-        u32 palette[64] @  0x0 in paletteSection [[export]];
+        u32 palette[numberOfColors] @  0x0 in paletteSection [[export]];
     }
     [[hex::visualize("bitmap", data, width, height, palette)]]
     ;
@@ -123,9 +125,6 @@ namespace auto Img {
         PaletteHeader paletteHeaders[paletteCount];
         SequenceScript sequences[sequenceCount];
         SequenceScript scripts[scriptCount];
-
-        auto ps = paletteHeaders[imgHeaders[0].palette - 3].rgba32Section;
-        u32 p[64] @  0x0 in ps [[export]];
 
         ImgWithPaletteVisualize _viz[imageCount] @ 0x0;
         
